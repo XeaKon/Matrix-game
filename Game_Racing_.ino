@@ -22,6 +22,13 @@ int left=-2;//limita ofsetului la stanga, pt mijloc
 int right=1;//limita ofsetului la dreapta
 
 
+int swState=0;
+int lastswState=0;
+unsigned int lastDebounceTime=0;
+unsigned int debounceDelay=50;
+int ok=0;
+
+
 int k=0;
 int poset=0;//ofsetul pt masina
 int past=0;
@@ -32,7 +39,8 @@ int j=0;
 int er=0;
 int interval=350;
 int noOfTrack=1;
-
+int highscore=0;
+int pnoOfTrack=1;
  
 void setup()
 {
@@ -40,6 +48,7 @@ void setup()
   lc.shutdown(0, false); // turn off power saving, enables display
   lc.setIntensity(0, 2); // sets brightness (0~15 possible values)
   lc.clearDisplay(0);// clear screen
+  pinMode(sw,INPUT_PULLUP);
   Serial.begin(9600);
   
 }
@@ -94,6 +103,8 @@ else
 }
 
 
+if(er==0)
+{
 if(ychanged==1&&poset!=0)
 {
 lc.setLed(0, 3+count+poset, 7, false);//stingera ledurilor anterioare
@@ -117,6 +128,7 @@ lc.setLed(0, 3+count, 5, true);
 lc.setLed(0, 5+count, 5, true);
 lc.setLed(0, 4+count, 4, true);
 
+}
 
   if(er==0)
   {
@@ -137,6 +149,7 @@ if(millis()-past>=interval&&i<8)
   {
    lc.setLed(0, 2+track, i, true);
   lc.setLed(0, 1+track, i, true);
+  highscore++;
   if(i==4&&count>-1)
   {
     left+=2;
@@ -160,6 +173,7 @@ if(millis()-past>=interval&&i<8)
    
   lc.setLed(0, 2+track, i-13, false);
   lc.setLed(0, 1+track, i-13, false);
+  highscore++;
    past=millis();
    i++;
   }
@@ -170,11 +184,11 @@ if(millis()-past>=interval&&i<8)
         left-=2;
 
     
-    if(noOfTrack!=0)
-      noOfTrack=random(noOfTrack-1,noOfTrack+2)%2;
-    else
-     {noOfTrack=1;}
-     
+     while(pnoOfTrack==noOfTrack)
+      noOfTrack=random(noOfTrack-1,noOfTrack+2)%3;
+   pnoOfTrack=noOfTrack;
+            if(interval>150)
+         interval-=50;
     }
     else
     {
@@ -203,6 +217,7 @@ for(int i=0;i<8;i++)
   {
    lc.setLed(0, 6-track, i, true);
   lc.setLed(0, 1+track, i, true);
+  highscore++;
   if(i==4&&count>-2&&count<1)
   {
     left++;
@@ -228,6 +243,7 @@ for(int i=0;i<8;i++)
    
   lc.setLed(0, 6-track, i-13, false);
   lc.setLed(0, 1+track, i-13, false);
+  highscore++;
    past=millis();
    i++;
   }
@@ -237,10 +253,12 @@ for(int i=0;i<8;i++)
     {i=0;
         left--;
     right++;
-    if(noOfTrack!=0)
-      noOfTrack=random(noOfTrack-1,noOfTrack+2)%2;
-    else
-     {noOfTrack=1;}
+   
+     while(pnoOfTrack==noOfTrack)
+      noOfTrack=random(noOfTrack-1,noOfTrack+2)%3;
+   pnoOfTrack=noOfTrack;
+          if(interval>150)
+         interval-=50;
     }
     else
     {
@@ -252,8 +270,79 @@ for(int i=0;i<8;i++)
 
 
  } break;
+ 
 
    case 2:    
+
+    for(int i=0;i<8;i++)
+{
+  lc.setLed(0, 0, i, true);
+  lc.setLed(0, 7, i, true);
+  //lc.setLed(0, 1, i, true);
+  
+  }
+
+  
+if(millis()-past>=interval&&i<8)
+  {
+   lc.setLed(0, 6-track, i, true);
+  lc.setLed(0, 5-track, i, true);
+  highscore++;
+  if(i==4&&count<0)
+  {
+    right-=2;
+
+  }
+  else
+  {
+    if(i==4&&(count>=0))
+    er=1;
+  }
+  
+  past=millis();
+  i++;
+  }
+
+
+
+
+ if(millis()-past>=interval&&i>=13)
+  {
+   
+  lc.setLed(0, 6-track, i-13, false);
+  lc.setLed(0, 5-track, i-13, false);
+  highscore++;
+   past=millis();
+   i++;
+  }
+
+  
+   if(i>=21)//13+8
+    {i=0;
+        right+=2;
+
+    
+    
+     while(pnoOfTrack==noOfTrack)
+      noOfTrack=random(noOfTrack-1,noOfTrack+2)%3;
+   pnoOfTrack=noOfTrack;
+       if(interval>150)
+         interval-=50;
+    }
+    else
+    {
+     if(millis()-past>=interval&&i>7&&i<13)
+     {i++; 
+     past=millis();
+     }
+     }
+      
+   
+   break;
+
+   case 3: 
+   
+   
    
    
    break;
@@ -272,7 +361,53 @@ if(er==1)
       delay(50);
     }
   }
+  er=2;
 }
+
+if(er==2)
+{
+  lc.clearDisplay(0);
+
+   for(int i2=0;i2<ssize;i2++)
+   {
+        lc.setLed(0, i2, i2, true);
+        lc.setLed(0, ssize-i2, i2, true);
+   }
+
+
+int reading=swVal;
+
+
+  if(reading!=lastswState)
+{
+  lastDebounceTime=millis();
+  }
+
+  if(millis()-lastDebounceTime>debounceDelay)
+  {
+    if(reading!=swState)
+   {
+    swState=reading;
+    if(swState==LOW) //era high
+    {
+      ok=(ok+1)%2;
+    }
+   }
+   
+  }
+
+  lastswState=reading;
+   if(ok==1)
+   {
+        er=0;
+      lc.clearDisplay(0);
+      i=0;
+      ok=0;
+      highscore=0;
+   }
+   
+}
+
 
 
 }//sf er if
@@ -305,8 +440,8 @@ if(er==1)
   Serial.print("noOfTrack: ");
   Serial.print(noOfTrack);
   Serial.print("  |  ");
-  Serial.print("count: ");
-  Serial.print(count);
+  Serial.print("highscore: ");
+  Serial.print(highscore);
   Serial.println("  |  ");
 
   
