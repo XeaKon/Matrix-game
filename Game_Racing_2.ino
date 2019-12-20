@@ -52,7 +52,7 @@ int interval=350;
 int noOfTrack=1;
 int highscore=0;
 int pnoOfTrack=1;
-int hs=0;
+int hs=EEPROM.read(0);
  
 void setup()
 {
@@ -62,6 +62,7 @@ void setup()
   lc.clearDisplay(0);// clear screen
   pinMode(sw,INPUT_PULLUP);
   lcd.begin(16,2);
+
   Serial.begin(9600);
   
 }
@@ -602,6 +603,13 @@ int reading=swVal;
         er=0;
         lcd.clear();
       lc.clearDisplay(0);
+         lcd.setCursor(0,0); lcd.print("The HS: ");
+         lcd.setCursor(7,0); 
+         lcd.print(hs);
+         delay(2000);
+       lcd.clear();
+
+      
       i=0;
       ok=0;
       interval=350;
@@ -610,6 +618,12 @@ int reading=swVal;
       if(highscore>hs)
       {
         hs=highscore;
+         for (int ij = 0 ; ij < EEPROM.length() ; ij++)
+          {
+            EEPROM.write(ij, 0);
+          }
+          EEPROM.write(0,hs);
+        
       }
       highscore=0;
    }
