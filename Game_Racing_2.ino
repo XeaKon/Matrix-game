@@ -1,5 +1,6 @@
 #include "LedControl.h" //  need the library
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
 LedControl lc = LedControl(12, 11, 10, 1); //DIN, CLK, LOAD, No. DRIVER
  
 // pin 12 is connected to the MAX7219 pin 1
@@ -51,6 +52,7 @@ int interval=350;
 int noOfTrack=1;
 int highscore=0;
 int pnoOfTrack=1;
+int hs=0;
  
 void setup()
 {
@@ -91,11 +93,13 @@ swVal=digitalRead(sw);
 {
 if(yVal<300&&ychanged==0)
 {
- count--;
- poset=1;
- if(count<left)
- {count=left; poset=0;}
- ychanged=1;
+   count--;
+   poset=1;
+   if(count<left)
+    {
+      count=left; poset=0;
+    }
+     ychanged=1;
 }
 else
 {
@@ -104,11 +108,13 @@ else
     count++;
     poset=-1;
     if(count>right)
- {count=right; poset=0;}
+  {
+     count=right; poset=0;}
      ychanged=1;
   }
   else
-  {if(yVal>=300&&yVal<=700)
+  {
+    if(yVal>=300&&yVal<=700)
    ychanged=0; 
   }
 }
@@ -116,17 +122,17 @@ else
 
 if(er==0)
 {
-if(ychanged==1&&poset!=0)
-{
-lc.setLed(0, 3+count+poset, 7, false);//stingera ledurilor anterioare
-lc.setLed(0, 4+count+poset, 7, false);
-lc.setLed(0, 5+count+poset, 7, false);
-lc.setLed(0, 4+count+poset, 6, false);
-lc.setLed(0, 4+count+poset, 5, false);
-lc.setLed(0, 3+count+poset, 5, false);
-lc.setLed(0, 5+count+poset, 5, false);
-lc.setLed(0, 4+count+poset, 4, false);
-}
+  if(ychanged==1&&poset!=0)
+   {
+    lc.setLed(0, 3+count+poset, 7, false);//stingera ledurilor anterioare
+    lc.setLed(0, 4+count+poset, 7, false);
+    lc.setLed(0, 5+count+poset, 7, false);
+    lc.setLed(0, 4+count+poset, 6, false);
+    lc.setLed(0, 4+count+poset, 5, false);
+    lc.setLed(0, 3+count+poset, 5, false);
+    lc.setLed(0, 5+count+poset, 5, false);
+    lc.setLed(0, 4+count+poset, 4, false);
+   }
 
 
 
@@ -159,8 +165,8 @@ lc.setLed(0, 4+count, 4, true);
 if(millis()-past>=interval&&i<8)
   {
    lc.setLed(0, 2, i, true);//2 la stanga
-  lc.setLed(0, 1, i, true);
-  highscore++;
+   lc.setLed(0, 1, i, true);
+   highscore++;
   if(i==4&&count>-1)
   {
     left+=3;
@@ -191,24 +197,28 @@ if(millis()-past>=interval&&i<8)
 
   
    if(i>=21)//13+8
-    {i=0;
+    {
+        i=0;
         left-=3;
 
     
-     while(pnoOfTrack==noOfTrack)
-      noOfTrack=random(noOfTrack+1,noOfTrack+3);//pt 1 si 2
-   pnoOfTrack=noOfTrack;
+       while(pnoOfTrack==noOfTrack)
+          noOfTrack=random(noOfTrack+1,noOfTrack+3);//pt 1 si 2
+          
+      pnoOfTrack=noOfTrack;
+      
             if(interval>100)
-         interval-=50;
+              interval-=50;
     }
     else
     {
      if(millis()-past>=interval&&i>7&&i<13)
-     {i++; 
-     highscore++;
-     past=millis();
+     {
+      i++; 
+      highscore++;
+      past=millis();
      }
-     }
+    }
    
    
    
@@ -340,18 +350,20 @@ if(millis()-past>=interval&&i<8)
     
      while(pnoOfTrack==noOfTrack)
       noOfTrack=random(noOfTrack-1,noOfTrack+2)%4;
-   pnoOfTrack=noOfTrack;
+      
+       pnoOfTrack=noOfTrack;
        if(interval>100)
          interval-=50;
     }
     else
     {
      if(millis()-past>=interval&&i>7&&i<13)
-     {i++; 
-     highscore++;
-     past=millis();
+     {
+      i++; 
+      highscore++;
+      past=millis();
      }
-     }
+    }
       
    
    break;
@@ -408,25 +420,29 @@ if(millis()-past>=interval&&i<8)
 
   
    if(i>=21)//13+8
-    {i=0;
+    {
+        i=0;
         left-=4;
 
     
     
      while(pnoOfTrack==noOfTrack)
       noOfTrack=random(noOfTrack-1,noOfTrack+1)%4;
-   pnoOfTrack=noOfTrack;
+      
+       pnoOfTrack=noOfTrack;
+   
        if(interval>100)
          interval-=50;
     }
     else
     {
      if(millis()-past>=interval&&i>7&&i<13)
-     {i++; 
-     highscore++;
-     past=millis();
+     {
+      i++; 
+      highscore++;
+      past=millis();
      }
-     }
+    }
       
       
    
@@ -478,28 +494,29 @@ if(millis()-past>=interval&&i<8)
 
   
    if(i>=21)//13+8
-    {i=0;
+    {
+        i=0;
         left-=4;
 
     
     
      while(pnoOfTrack==noOfTrack)
       noOfTrack=random(noOfTrack-1,noOfTrack+1)%4;
-   pnoOfTrack=noOfTrack;
+      
+      pnoOfTrack=noOfTrack;
        if(interval>100)
          interval-=50;
     }
     else
     {
      if(millis()-past>=interval&&i>7&&i<13)
-     {i++; 
-     highscore++;
-     past=millis();
+     {
+      i++; 
+      highscore++;
+      past=millis();
      }
-     }
+    }
       
-      
-   
    
    break;
 
@@ -515,8 +532,13 @@ if(millis()-past>=interval&&i<8)
  }
   }
 
-lcd.setCursor(0,0); lcd.print("Highscore: ");
-lcd.setCursor(10,0); lcd.print(highscore);
+
+
+lcd.setCursor(0,0); 
+lcd.print("The Score: ");
+
+lcd.setCursor(10,0); 
+lcd.print(highscore);
 
   
 
@@ -536,13 +558,20 @@ if(er==1)
 if(er==2)
 {
   lc.clearDisplay(0);
+  
 
    for(int i2=0;i2<ssize;i2++)
    {
         lc.setLed(0, i2, i2, true);
         lc.setLed(0, ssize-i2, i2, true);
    }
-
+   if(highscore>hs)
+      {
+         lcd.clear();
+         lcd.setCursor(0,0); lcd.print("NEW HS: ");
+         lcd.setCursor(7,0); 
+         lcd.print(highscore);
+      }
    lcd.setCursor(0,1); lcd.print("GAME OVER! ");
 }
 
@@ -578,6 +607,10 @@ int reading=swVal;
       interval=350;
       noOfTrack=1;
       pnoOfTrack=1;
+      if(highscore>hs)
+      {
+        hs=highscore;
+      }
       highscore=0;
    }
    
